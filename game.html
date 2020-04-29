@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+        <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+        <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+        <title>Number Game</title>
+    </head>
+    <body>
+        <div id="app"></div>
+        <script type="text/babel">
+            class Game extends React.Component {
+                
+                constructor(props) {
+                    super(props)
+                    this.state = {
+                        num1: Math.ceil(Math.random() * 10),
+                        num2: Math.ceil(Math.random() * 10),
+                        answer: "",
+                        score: 0,
+                        level: 1,
+                        life: 3
+                    }
+                }
+            
+                render() {
+                    if(this.state.life < 1) {
+                        return this.renderLost()
+                    } else if(this.state.score<20){
+                        return this.renderPlaying()
+                    } else {
+                        return this.renderWin()
+                    }
+                }
+            
+                renderWin() {
+                    return(
+                        <div>
+                            <h1>Congratulations! You won!</h1>
+                            <button onClick={this.newGame}>New Game</button>
+                        </div>
+                    )
+                } 
+            
+                renderPlaying() {
+                    return(
+                        <div>
+                            <h1>{this.state.num1} + {this.state.num2}</h1>
+                            <input onChange={this.manipulateField} onKeyPress={this.keyPressed} value={this.state.answer} />
+                            <h3>Score: {this.state.score}</h3>
+                            <h4>Level: {this.state.level}</h4>
+                            <h4>Life(s): {this.state.life}</h4>
+                        </div>
+                    )
+                }
+            
+                renderLost() {
+                    return (  
+                        <div>
+                            <h1>Sorry! You lost!</h1>
+                            <button onClick={this.newGame}>New Game</button>
+                        </div>
+                    )
+                }
+            
+                newGame = () => {
+                    this.setState({
+                        score: 0,
+                        life: 3,
+                        level: 1
+                    })
+                    return this.render()
+                }
+            
+                manipulateField = (event) => {
+                    this.setState({
+                        answer: event.target.value
+                    })
+                }
+            
+                keyPressed = (event) => {
+                    if(event.key === "Enter") {
+                        const answer = parseInt(this.state.answer)
+                        if(answer === this.state.num1 + this.state.num2 && this.state.score < 10) {
+                            this.setState(state => ({
+                                score: state.score+1,
+                                answer: "",
+                                num1: Math.ceil(Math.random() * 10),
+                                num2: Math.ceil(Math.random() * 10)
+                        }))
+                        }
+                        else if(answer === this.state.num1 + this.state.num2 && this.state.score >= 10) {
+                            this.setState(state => ({
+                                score: state.score+1,
+                                answer: "",
+                                num1: Math.ceil(Math.random() * 10) + 10,
+                                num2: Math.ceil(Math.random() * 10) + 10,
+                                level: 2
+                        }))
+                        }
+                        else {
+                            alert("Sorry Wrong answer")
+                            this.setState(state => ({
+                                answer: "",
+                                life: state.life-1
+                            }))
+                        }
+                        
+                        }
+                    }
+                }
+            
+            class App extends React.Component {
+                render() {
+                    return(
+                        <Game />
+                    )
+                }
+            }
+            
+            ReactDOM.render(<App />, document.getElementById("app"))
+        </script>
+    </body>
+</html>
